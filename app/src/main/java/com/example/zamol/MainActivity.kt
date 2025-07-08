@@ -13,6 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.zamol.ui.theme.ZamolTheme
 
+// Highlight Color: E2B680
+// Main Color: 536DFE
+// Main Color Dark: 6A3DE8
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
