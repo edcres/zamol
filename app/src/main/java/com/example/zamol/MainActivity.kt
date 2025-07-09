@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.zamol.ui.theme.ZamolTheme
+import dagger.hilt.EntryPoint
 
 // Highlight Color: E2B680
 // Main Color: 536DFE
@@ -23,6 +24,7 @@ import com.example.zamol.ui.theme.ZamolTheme
 //
 //Or go straight into the chat UI and Firestore integration?
 
+@EntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
