@@ -17,6 +17,12 @@ import com.example.zamol.ui.theme.ZamolTheme
 // Main Color: 536DFE
 // Main Color Dark: 6A3DE8
 
+//Scaffold the folder structure and base files?
+//
+//Start with Firebase Auth screens (login/signup)?
+//
+//Or go straight into the chat UI and Firestore integration?
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
