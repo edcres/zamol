@@ -13,6 +13,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.zamol.viewmodel.AuthViewModel
 import com.example.zamol.viewmodel.AuthState
 
+//Uses AuthViewModel to call login or signup
+//Displays a loading spinner while authenticating
+//Shows error messages if login/signup fails
+//Switches between login and signup modes
+//Calls onAuthSuccess() when login/signup is successful (so you can navigate to chat screen)
+
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
