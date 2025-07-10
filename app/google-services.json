@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "454521842201",
+    "project_id": "zamol-c56d7",
+    "storage_bucket": "zamol-c56d7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:454521842201:android:bf9762b8305734bd625888",
+        "android_client_info": {
+          "package_name": "com.example.zamol"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfWr-VqR8TjGvNkRGiKpByshMveIh0foI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
