@@ -14,7 +14,6 @@ import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import com.example.zamol.ui.navigation.AppNavHost
 
-
 // Highlight Color: E2B680
 // Main Color: 536DFE
 // Main Color Dark: 6A3DE8
@@ -55,21 +54,3 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
-
-//@AndroidEntryPoint
-//class MainActivity : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContent {
-//            ZamolTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
