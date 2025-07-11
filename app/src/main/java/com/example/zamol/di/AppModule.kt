@@ -2,6 +2,8 @@ package com.example.zamol.di
 
 import com.example.zamol.data.repo.AuthRepository
 import com.example.zamol.data.repo.AuthRepositoryImpl
+import com.example.zamol.data.repo.ChatRepository
+import com.example.zamol.data.repo.ChatRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -27,4 +29,10 @@ object AppModule {
     fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
         return AuthRepositoryImpl(firebaseAuth)
     }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        firestore: FirebaseFirestore
+    ): ChatRepository = ChatRepositoryImpl(firestore)
 }
