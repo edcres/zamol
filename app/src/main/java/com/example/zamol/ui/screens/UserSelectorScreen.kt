@@ -12,8 +12,8 @@ import com.example.zamol.data.model.User
 
 @Composable
 fun UserSelectorScreen(
-    onUserSelected: (User) -> Unit,
-    viewModel: UserListViewModel = hiltViewModel()
+    viewModel: UserListViewModel = hiltViewModel(),
+    onUserSelected: (User) -> Unit
 ) {
     val users by viewModel.users.collectAsState()
 
