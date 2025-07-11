@@ -100,6 +100,21 @@ fun AuthScreen(
             Text(if (isLogin) "Login" else "Sign Up")
         }
 
+        // TODO: remove for producition
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                onAuthSuccess() // bypasses login
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Skip Login (Dev Only)")
+        }
+        // TODO: ^^^^^^^^^^^^^^ Remove for production ^^^^^^^^^^^^^^
+
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(onClick = { isLogin = !isLogin }) {
