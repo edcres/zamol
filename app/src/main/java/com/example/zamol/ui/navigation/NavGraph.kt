@@ -10,6 +10,7 @@ import com.example.zamol.ui.screens.ChatScreen
 
 object Routes {
     const val AUTH = "auth"
+    const val SELECT_USER = "select_user"
     const val CHAT = "chat"
 }
 
