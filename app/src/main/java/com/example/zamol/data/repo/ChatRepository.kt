@@ -1,4 +1,4 @@
-package com.example.zamol.data.repository
+package com.example.zamol.data.repo
 
 import com.example.zamol.data.model.Message
 import kotlinx.coroutines.flow.Flow
