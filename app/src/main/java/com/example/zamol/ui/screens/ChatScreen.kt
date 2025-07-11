@@ -15,8 +15,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
+    receiverId: String,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(receiverId) {
+        viewModel.startListeningTo(receiverId)
+    }
+
     val messages by viewModel.messages.collectAsState()
     val error by viewModel.error.collectAsState()
     val currentUserId = viewModel.getCurrentUserId()
