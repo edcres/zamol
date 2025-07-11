@@ -3,8 +3,8 @@ package com.example.zamol.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.zamol.data.model.Message
-import com.example.zamol.data.repo.ChatRepository
 import com.example.zamol.data.repo.AuthRepository
+import com.example.zamol.data.repo.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,16 +22,20 @@ class ChatViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    init {
-        // Start listening for messages sent *to* this user
-        authRepository.getCurrentUser()?.uid?.let { uid ->
-            viewModelScope.launch {
-                chatRepository.getMessagesForUser(uid)
-                    .catch { e -> _error.value = e.message }
-                    .collect { messageList ->
-                        _messages.value = messageList
+    fun startListeningTo(receiverId: String) {
+        val currentUserId = getCurrentUserId() ?: return
+
+        viewModelScope.launch {
+            chatRepository.getMessagesForUser(currentUserId)
+                .catch { e -> _error.value = e.message }
+                .collect { messageList ->
+                    // Show messages where the sender OR receiver is the other user
+                    val filtered = messageList.filter {
+                        (it.senderId == currentUserId && it.receiverId == receiverId) ||
+                                (it.senderId == receiverId && it.receiverId == currentUserId)
                     }
-            }
+                    _messages.value = filtered
+                }
         }
     }
 
@@ -51,6 +55,10 @@ class ChatViewModel @Inject constructor(
                 _error.value = result.exceptionOrNull()?.message
             }
         }
+    }
+
+    fun getCurrentUserId(): String? {
+        return authRepository.getCurrentUser()?.uid
     }
 
     fun clearError() {
