@@ -31,7 +31,7 @@ fun ChatScreen(
     Scaffold(
         bottomBar = {
             MessageInputBar(onSend = { content ->
-                // TEMP: Hardcoded receiver ID for demo
+                // TODO: Hardcoded receiver ID for demo
                 viewModel.sendMessage(toUserId = "test-receiver", content = content)
             })
         }
