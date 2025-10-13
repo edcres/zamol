@@ -1,8 +1,10 @@
 package com.example.zamol.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.zamol.data.model.Message
+import com.example.zamol.data.model.User
 import com.example.zamol.data.repo.AuthRepository
 import com.example.zamol.data.repo.ChatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +17,8 @@ class ChatViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
+
+    private final val TAG = "CHAT_VM_TAG"
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
@@ -40,7 +44,15 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(toUserId: String, content: String) {
-        val sender = authRepository.getCurrentUser() ?: return
+        Log.d(TAG, "sendMessage: called1 ____________")
+        // TODO: replace with: `val sender = authRepository.getCurrentUser() ?: return`
+        val sender = authRepository.getCurrentUser() ?: User(
+            uid = "FAKE_UID_001",
+            displayName = "Dev Tester",
+            email = "dev@example.com"
+        )
+
+        Log.d(TAG, "sendMessage: called2 \n${sender.uid}\n${toUserId}\n${toUserId}\n${System.currentTimeMillis()}____________")
 
         val message = Message(
             senderId = sender.uid,
@@ -49,12 +61,15 @@ class ChatViewModel @Inject constructor(
             timestamp = System.currentTimeMillis()
         )
 
+        Log.d(TAG, "sendMessage: called3 ____________")
+
         viewModelScope.launch {
             val result = chatRepository.sendMessage(message)
             if (result.isFailure) {
                 _error.value = result.exceptionOrNull()?.message
             }
         }
+        Log.d(TAG, "sendMessage: called4 ____________")
     }
 
     fun getCurrentUserId(): String? {
