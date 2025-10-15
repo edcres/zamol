@@ -1,5 +1,6 @@
 package com.example.zamol.data.repo
 
+import com.example.zamol.data.model.ChatRoom
 import com.example.zamol.data.model.Message
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -63,4 +64,20 @@ class ChatRepositoryImpl @Inject constructor(
             listenerRegistration.remove()
         }
     }
+
+    override suspend fun getChatRoomsForUser(userId: String): List<ChatRoom> {
+        return try {
+            val snapshot = firestore.collection("chatRooms")
+                .whereArrayContains("participants", userId)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                doc.toObject(ChatRoom::class.java)?.copy(id = doc.id)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
 }
