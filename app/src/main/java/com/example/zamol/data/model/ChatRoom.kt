@@ -1,8 +1,10 @@
 package com.example.zamol.data.model
 
+import com.google.firebase.Timestamp
+
 data class ChatRoom(
     val id: String = "",
+    val name: String? = null,
     val participants: List<String> = emptyList(),
-    val lastMessage: String = "",
-    val lastUpdated: Long = 0L
+    val createdAt: Timestamp = Timestamp.now()
 )
