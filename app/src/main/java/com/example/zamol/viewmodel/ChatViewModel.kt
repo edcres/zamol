@@ -52,7 +52,7 @@ class ChatViewModel @Inject constructor(
             email = "dev@example.com"
         )
 
-        Log.d(TAG, "sendMessage: called2 \n${sender.uid}\n${toUserId}\n${toUserId}\n${System.currentTimeMillis()}____________")
+        Log.d(TAG, "sendMessage: called2 -\n${sender.uid}-\n${toUserId}-\n${toUserId}-\n${System.currentTimeMillis()}____________")
 
         val message = Message(
             senderId = sender.uid,
