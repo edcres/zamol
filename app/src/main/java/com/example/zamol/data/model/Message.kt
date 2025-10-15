@@ -1,9 +1,9 @@
 package com.example.zamol.data.model
 
+import com.google.firebase.Timestamp
+
 data class Message(
-    val id: String = "",
     val senderId: String = "",
-    val receiverId: String = "",
     val content: String = "",
-    val timestamp: Long = 0L
+    val timestamp: Timestamp = Timestamp.now()
 )
