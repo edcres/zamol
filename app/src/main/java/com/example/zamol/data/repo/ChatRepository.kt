@@ -1,5 +1,6 @@
 package com.example.zamol.data.repo
 
+import com.example.zamol.data.model.ChatRoom
 import com.example.zamol.data.model.Message
 import kotlinx.coroutines.flow.Flow
 
@@ -9,4 +10,6 @@ interface ChatRepository {
     suspend fun sendMessage(chatRoomId: String, content: String)
 
     fun listenToMessages(chatRoomId: String): Flow<List<Message>>
+
+    suspend fun getChatRoomsForUser(userId: String): List<ChatRoom>
 }
