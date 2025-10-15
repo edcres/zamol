@@ -3,64 +3,63 @@ package com.example.zamol.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.zamol.data.model.Message
-import com.example.zamol.data.model.User
-import com.example.zamol.data.repo.AuthRepository
 import com.example.zamol.data.repo.ChatRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
-    private val authRepository: AuthRepository
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages: StateFlow<List<Message>> = _messages.asStateFlow()
+    val messages: StateFlow<List<Message>> = _messages
 
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
+    val error: StateFlow<String?> = _error
+
+    private var currentChatRoomId: String? = null
 
     fun startListeningTo(chatRoomId: String) {
+        if (currentChatRoomId == chatRoomId) return
+        currentChatRoomId = chatRoomId
+
         viewModelScope.launch {
-            chatRepository.getMessagesForRoom(chatRoomId)
-                .catch { e -> _error.value = e.message }
-                .collect { _messages.value = it }
+            try {
+                chatRepository.listenToMessages(chatRoomId).collect { msgs ->
+                    _messages.value = msgs
+                }
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
         }
     }
 
-    fun sendMessage(chatRoomId: String, content: String) {
-        val sender = authRepository.getCurrentUser() ?: User(
-            uid = "FAKE_UID_001",
-            displayName = "Dev Tester",
-            email = "dev@example.com"
-        )
-
-        val message = Message(
-            senderId = sender.uid,
-            receiverId = "", // Optional now, since the room groups messages
-            content = content,
-            timestamp = System.currentTimeMillis()
-        )
-
+    fun sendMessage(content: String) {
+        val chatRoomId = currentChatRoomId ?: return
         viewModelScope.launch {
-            val result = chatRepository.sendMessageToRoom(chatRoomId, message)
-            if (result.isFailure) {
-                _error.value = result.exceptionOrNull()?.message
+            try {
+                chatRepository.sendMessage(chatRoomId, content)
+            } catch (e: Exception) {
+                _error.value = e.message
             }
         }
     }
 
     fun getCurrentUserId(): String? {
-        return authRepository.getCurrentUser()?.uid
+        return auth.currentUser?.uid
     }
 
     fun clearError() {
         _error.value = null
     }
 }
+
 
 
 //package com.example.zamol.viewmodel
