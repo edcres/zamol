@@ -32,7 +32,7 @@ fun ChatScreen(
         bottomBar = {
             MessageInputBar(onSend = { content ->
                 // TODO: Hardcoded receiver ID for demo
-                viewModel.sendMessage(toUserId = "test-receiver", content = content)
+                viewModel.sendMessage(chatRoomId = chatRoomId, content = content)
             })
         }
     ) { padding ->

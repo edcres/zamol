@@ -13,30 +13,45 @@ class ChatRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ChatRepository {
 
-    private val messagesCollection = firestore.collection("messages")
-
-    override fun getMessagesForUser(receiverId: String): Flow<List<Message>> = callbackFlow {
-        val listener = messagesCollection
-            .whereEqualTo("receiverId", receiverId)
+    override fun getMessagesForRoom(chatRoomId: String): Flow<List<Message>> = callbackFlow {
+        val messagesRef = firestore
+            .collection("chatRooms")
+            .document(chatRoomId)
+            .collection("messages")
             .orderBy("timestamp", Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
-                }
 
-                val messages = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(Message::class.java)?.copy(id = doc.id)
-                } ?: emptyList()
-
-                trySend(messages).isSuccess
+        val listener = messagesRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
             }
+
+            val messages = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(Message::class.java)?.copy(id = doc.id)
+            } ?: emptyList()
+
+            trySend(messages).isSuccess
+        }
 
         awaitClose { listener.remove() }
     }
 
-    override suspend fun sendMessage(message: Message): Result<Unit> = try {
-        messagesCollection.add(message).await()
+    override suspend fun sendMessageToRoom(chatRoomId: String, message: Message): Result<Unit> = try {
+        val messagesRef = firestore
+            .collection("chatRooms")
+            .document(chatRoomId)
+            .collection("messages")
+
+        messagesRef.add(message).await()
+
+        // (Optional) Update chat room metadata like lastMessage/lastUpdated
+        firestore.collection("chatRooms").document(chatRoomId).update(
+            mapOf(
+                "lastMessage" to message.content,
+                "lastUpdated" to message.timestamp
+            )
+        ).await()
+
         Result.success(Unit)
     } catch (e: Exception) {
         Result.failure(e)
