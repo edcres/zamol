@@ -33,6 +33,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideChatRepository(
-        firestore: FirebaseFirestore
-    ): ChatRepository = ChatRepositoryImpl(firestore)
+        firestore: FirebaseFirestore,
+        auth: FirebaseAuth
+    ): ChatRepository = ChatRepositoryImpl(firestore, auth)
 }
