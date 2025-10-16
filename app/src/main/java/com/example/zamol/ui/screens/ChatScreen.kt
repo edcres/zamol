@@ -1,72 +1,67 @@
 package com.example.zamol.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.zamol.ui.components.MessageBubble
-import com.example.zamol.ui.components.MessageInputBar
 import com.example.zamol.viewmodel.ChatViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
-    receiverId: String,
+    chatRoomId: String,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-
-    LaunchedEffect(receiverId) {
-        viewModel.startListeningTo(receiverId)
-    }
-
     val messages by viewModel.messages.collectAsState()
     val error by viewModel.error.collectAsState()
     val currentUserId = viewModel.getCurrentUserId()
-    val scope = rememberCoroutineScope()
+    var messageText by remember { mutableStateOf("") }
 
-    Scaffold(
-        bottomBar = {
-            MessageInputBar(onSend = { content ->
-                // TODO: Hardcoded receiver ID for demo
-                viewModel.sendMessage(chatRoomId = chatRoomId, content = content)
-            })
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+    LaunchedEffect(chatRoomId) {
+        viewModel.startListeningTo(chatRoomId)
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.weight(1f).padding(8.dp),
+            reverseLayout = true
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp),
-                reverseLayout = true
-            ) {
-                items(messages.reversed()) { message ->
-                    MessageBubble(
-                        message = message,
-                        isCurrentUser = message.senderId == currentUserId
-                    )
-                }
+            items(messages.reversed()) { message ->
+                val isCurrentUser = message.senderId == currentUserId
+                MessageBubble(message = message, isCurrentUser = isCurrentUser)
             }
         }
 
-        if (error != null) {
-            Snackbar(
-                modifier = Modifier.padding(8.dp),
-                action = {
-                    TextButton(onClick = { viewModel.clearError() }) {
-                        Text("Dismiss")
-                    }
-                }
-            ) {
-                Text(error ?: "")
+        Row(modifier = Modifier.padding(8.dp)) {
+            TextField(
+                value = messageText,
+                onValueChange = { messageText = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Type a message") }
+            )
+            IconButton(onClick = {
+                viewModel.sendMessage(messageText)
+                messageText = ""
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = "Send",
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
+    }
+
+    error?.let {
+        Toast.makeText(LocalContext.current, it, Toast.LENGTH_SHORT).show()
+        viewModel.clearError()
     }
 }
