@@ -49,7 +49,7 @@ fun AppNavHost(
             })
         ) { backStackEntry ->
             val receiverId = backStackEntry.arguments?.getString("receiverId") ?: return@composable
-            ChatScreen(receiverId = receiverId)
+            ChatScreen(chatRoomId = receiverId)
         }
     }
 }
