@@ -43,13 +43,13 @@ fun AppNavHost(
 
         // Chat screen with receiverId as nav argument
         composable(
-            route = "${Routes.CHAT}/{receiverId}",
-            arguments = listOf(navArgument("receiverId") {
+            route = "${Routes.CHAT}/{chatRoomId}",
+            arguments = listOf(navArgument("chatRoomId") {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            val receiverId = backStackEntry.arguments?.getString("receiverId") ?: return@composable
-            ChatScreen(chatRoomId = receiverId)
+            val chatRoomId = backStackEntry.arguments?.getString("chatRoomId") ?: return@composable
+            ChatScreen(chatRoomId = chatRoomId)
         }
     }
 }
