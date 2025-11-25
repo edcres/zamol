@@ -119,52 +119,57 @@ fun AuthScreen(
             )
         }
 
-        // 🔥 DEV-ONLY TEST LOGIN BUTTONS
-        if (BuildConfig.DEBUG) {
-            Spacer(modifier = Modifier.height(24.dp))
+        // 🔥 Dev test user buttons – always visible for now
+        Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Dev test users",
-                style = MaterialTheme.typography.labelMedium
-            )
+        Text(
+            text = "Dev test users",
+            style = MaterialTheme.typography.labelMedium
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                onClick = {
+                    viewModel.login(TEST_USER_1_EMAIL, TEST_USER_1_PASSWORD)
+                },
+                modifier = Modifier.weight(1f),
+                enabled = authState !is AuthState.Loading
             ) {
-                OutlinedButton(
-                    onClick = {
-                        viewModel.login(TEST_USER_1_EMAIL, TEST_USER_1_PASSWORD)
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = authState !is AuthState.Loading
-                ) {
-                    Text("Test User 1")
-                }
+                Text("Test User 1")
+            }
 
-                OutlinedButton(
-                    onClick = {
-                        viewModel.login(TEST_USER_2_EMAIL, TEST_USER_2_PASSWORD)
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = authState !is AuthState.Loading
-                ) {
-                    Text("Test User 2")
-                }
+            OutlinedButton(
+                onClick = {
+                    viewModel.login(TEST_USER_2_EMAIL, TEST_USER_2_PASSWORD)
+                },
+                modifier = Modifier.weight(1f),
+                enabled = authState !is AuthState.Loading
+            ) {
+                Text("Test User 2")
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         when (authState) {
-            is AuthState.Loading -> CircularProgressIndicator()
-            is AuthState.Error -> Text(
-                text = (authState as AuthState.Error).message,
-                color = MaterialTheme.colorScheme.error
-            )
+            is AuthState.Loading -> {
+                Spacer(modifier = Modifier.height(12.dp))
+                CircularProgressIndicator()
+            }
+            is AuthState.Error -> {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = (authState as AuthState.Error).message,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
             else -> {}
         }
     }
 }
+
