@@ -12,12 +12,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.zamol.viewmodel.AuthViewModel
 import com.example.zamol.viewmodel.AuthState
+import com.google.firebase.BuildConfig
 
 //Uses AuthViewModel to call login or signup
 //Displays a loading spinner while authenticating
 //Shows error messages if login/signup fails
 //Switches between login and signup modes
 //Calls onAuthSuccess() when login/signup is successful (so you can navigate to chat screen)
+
+private const val TEST_USER_1_EMAIL = "test1@example.com"
+private const val TEST_USER_1_PASSWORD = "password123"
+
+private const val TEST_USER_2_EMAIL = "test2@example.com"
+private const val TEST_USER_2_PASSWORD = "password123"
 
 @Composable
 fun AuthScreen(
@@ -86,6 +93,7 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Normal login / signup button
         Button(
             onClick = {
                 if (isLogin) {
@@ -100,21 +108,6 @@ fun AuthScreen(
             Text(if (isLogin) "Login" else "Sign Up")
         }
 
-        // TODO: remove for producition
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                onAuthSuccess() // bypasses login
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text("Skip Login (Dev Only)")
-        }
-        // TODO: ^^^^^^^^^^^^^^ Remove for production ^^^^^^^^^^^^^^
-
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(onClick = { isLogin = !isLogin }) {
@@ -124,6 +117,43 @@ fun AuthScreen(
                 else
                     "Already have an account? Log in"
             )
+        }
+
+        // 🔥 DEV-ONLY TEST LOGIN BUTTONS
+        if (BuildConfig.DEBUG) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Dev test users",
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        viewModel.login(TEST_USER_1_EMAIL, TEST_USER_1_PASSWORD)
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = authState !is AuthState.Loading
+                ) {
+                    Text("Test User 1")
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        viewModel.login(TEST_USER_2_EMAIL, TEST_USER_2_PASSWORD)
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = authState !is AuthState.Loading
+                ) {
+                    Text("Test User 2")
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
