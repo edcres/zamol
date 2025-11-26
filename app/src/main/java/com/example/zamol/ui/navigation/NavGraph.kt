@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.zamol.ui.screens.AuthScreen
 import com.example.zamol.ui.screens.ChatScreen
 import com.example.zamol.ui.screens.UserSelectorScreen
+import com.google.firebase.auth.FirebaseAuth
 
 object Routes {
     const val AUTH = "auth"
@@ -25,23 +26,32 @@ fun AppNavHost(
         startDestination = Routes.AUTH,
         modifier = modifier
     ) {
-        // Auth screen
         composable(Routes.AUTH) {
-            AuthScreen(onAuthSuccess = {
-                navController.navigate(Routes.SELECT_USER) {
-                    popUpTo(Routes.AUTH) { inclusive = true }
+            AuthScreen(
+                onAuthSuccess = {
+                    navController.navigate(Routes.SELECT_USER) {
+                        popUpTo(Routes.AUTH) { inclusive = true }
+                    }
                 }
-            })
+            )
         }
 
-        // Select user to chat with
         composable(Routes.SELECT_USER) {
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
             UserSelectorScreen { selectedUser ->
-                navController.navigate("${Routes.CHAT}/${selectedUser.uid}")
+                // Don’t navigate if somehow not logged in
+                val me = currentUserId ?: return@UserSelectorScreen
+
+                // ✅ DM-style deterministic room ID
+                val chatRoomId = listOf(me, selectedUser.uid)
+                    .sorted()
+                    .joinToString("_")
+
+                navController.navigate("${Routes.CHAT}/$chatRoomId")
             }
         }
 
-        // Chat screen with receiverId as nav argument
         composable(
             route = "${Routes.CHAT}/{chatRoomId}",
             arguments = listOf(navArgument("chatRoomId") {
@@ -53,3 +63,4 @@ fun AppNavHost(
         }
     }
 }
+
