@@ -39,17 +39,18 @@ fun AppNavHost(
         composable(Routes.SELECT_USER) {
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-            UserSelectorScreen { selectedUser ->
-                // Don’t navigate if somehow not logged in
-                val me = currentUserId ?: return@UserSelectorScreen
+            UserSelectorScreen(
+                onUserSelected = { selectedUser ->
+                    val me = currentUserId ?: return@UserSelectorScreen
 
-                // ✅ DM-style deterministic room ID
-                val chatRoomId = listOf(me, selectedUser.uid)
-                    .sorted()
-                    .joinToString("_")
+                    // DM-style deterministic room ID for 1-to-1 chat
+                    val chatRoomId = listOf(me, selectedUser.uid)
+                        .sorted()
+                        .joinToString("_")
 
-                navController.navigate("${Routes.CHAT}/$chatRoomId")
-            }
+                    navController.navigate("${Routes.CHAT}/$chatRoomId")
+                }
+            )
         }
 
         composable(
