@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,48 +15,110 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.zamol.data.model.ChatRoom
 import com.example.zamol.data.model.User
+import com.example.zamol.viewmodel.ChatRoomsViewModel
 import com.example.zamol.viewmodel.UserListViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun UserSelectorScreen(
     onUserSelected: (User) -> Unit,
-    viewModel: UserListViewModel = hiltViewModel()
+    onGroupSelected: (ChatRoom) -> Unit
 ) {
-    val users by viewModel.users.collectAsStateWithLifecycle()
+    val userViewModel: UserListViewModel = hiltViewModel()
+    val roomsViewModel: ChatRoomsViewModel = hiltViewModel()
 
-    // Current logged-in user ID
+    val users by userViewModel.users.collectAsStateWithLifecycle()
+    val rooms by roomsViewModel.rooms.collectAsStateWithLifecycle()
+
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-    // Filter out the current user from the list
+    // 1-to-1: hide current user
     val filteredUsers = if (currentUserId == null) {
         users
     } else {
         users.filter { it.uid != currentUserId }
     }
 
+    // Groups: only rooms with 3+ participants
+    val groupRooms = rooms.filter { it.participants.size > 2 }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // 🔹 Groups section
         Text(
-            text = "Start a chat",
-            style = MaterialTheme.typography.titleLarge
+            text = "Groups",
+            style = MaterialTheme.typography.titleMedium
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (groupRooms.isEmpty()) {
+            Text(
+                text = "No groups yet",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(groupRooms) { room ->
+                    GroupRow(room = room) { onGroupSelected(room) }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 🔹 In the future, you can add a "Groups" section above or below this.
+        // 🔹 1-to-1 section
+        Text(
+            text = "1-to-1 chats",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(filteredUsers) { user ->
-                UserRow(user = user, onClick = { onUserSelected(user) })
+                UserRow(user = user) { onUserSelected(user) }
             }
+        }
+    }
+}
+
+@Composable
+private fun GroupRow(
+    room: ChatRoom,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = room.name ?: "Group (${room.participants.size} members)",
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
