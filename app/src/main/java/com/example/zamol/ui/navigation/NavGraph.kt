@@ -43,15 +43,19 @@ fun AppNavHost(
                 onUserSelected = { selectedUser ->
                     val me = currentUserId ?: return@UserSelectorScreen
 
-                    // DM-style deterministic room ID for 1-to-1 chat
+                    // DM-style deterministic room ID
                     val chatRoomId = listOf(me, selectedUser.uid)
                         .sorted()
                         .joinToString("_")
 
                     navController.navigate("${Routes.CHAT}/$chatRoomId")
+                },
+                onGroupSelected = { room ->
+                    navController.navigate("${Routes.CHAT}/${room.id}")
                 }
             )
         }
+
 
         composable(
             route = "${Routes.CHAT}/{chatRoomId}",
