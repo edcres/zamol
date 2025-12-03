@@ -4,12 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,19 +37,43 @@ fun UserSelectorScreen(
         users.filter { it.uid != currentUserId }
     }
 
-    // Groups: only rooms with 3+ participants
+    // Groups: only rooms with 3+ participants (creator + at least 2 others)
     val groupRooms = rooms.filter { it.participants.size > 2 }
+
+    var showCreateGroupDialog by remember { mutableStateOf(false) }
+
+    // Dialog for creating group
+    if (showCreateGroupDialog) {
+        CreateGroupDialog(
+            users = filteredUsers,
+            onDismiss = { showCreateGroupDialog = false },
+            onCreate = { name, selectedUserIds ->
+                roomsViewModel.createGroup(name, selectedUserIds)
+                showCreateGroupDialog = false
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // 🔹 Groups section
-        Text(
-            text = "Groups",
-            style = MaterialTheme.typography.titleMedium
-        )
+        // 🔹 Groups section header + "Create group" button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Groups",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            TextButton(onClick = { showCreateGroupDialog = true }) {
+                Text("Create group")
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
