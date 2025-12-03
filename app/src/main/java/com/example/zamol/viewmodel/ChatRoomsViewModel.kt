@@ -32,4 +32,25 @@ class ChatRoomsViewModel @Inject constructor(
             _rooms.value = chatRooms
         }
     }
+
+    // 🔹 Create a new private group with current user + selected members
+    fun createGroup(groupName: String, memberIds: List<String>) {
+        val currentUserId = auth.currentUser?.uid ?: return
+
+        // Always include the creator; avoid duplicates
+        val participants = (memberIds + currentUserId).distinct()
+
+        viewModelScope.launch {
+            try {
+                chatRepository.createChatRoom(
+                    participants = participants,
+                    name = groupName
+                )
+                // Refresh the list so the new group appears
+                loadRooms()
+            } catch (e: Exception) {
+                // You could add error state here later if you want
+            }
+        }
+    }
 }
