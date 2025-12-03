@@ -15,23 +15,39 @@ import com.example.zamol.data.model.User
 @Composable
 fun GroupRow(
     room: ChatRoom,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLeave: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(12.dp)
         ) {
-            Text(
-                text = room.name ?: "Group (${room.participants.size} members)",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = room.name ?: "Group (${room.participants.size} members)",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onLeave) {
+                    Text("Leave")
+                }
+            }
         }
     }
 }
