@@ -33,7 +33,7 @@ class ChatRoomsViewModel @Inject constructor(
         }
     }
 
-    // 🔹 Create a new private group with current user + selected members
+    // Create a new private group with current user + selected members
     fun createGroup(groupName: String, memberIds: List<String>) {
         val currentUserId = auth.currentUser?.uid ?: return
 
@@ -53,4 +53,19 @@ class ChatRoomsViewModel @Inject constructor(
             }
         }
     }
+
+    fun leaveGroup(chatRoomId: String) {
+        val currentUserId = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            try {
+                chatRepository.leaveChatRoom(chatRoomId, currentUserId)
+                // Refresh list so this group disappears from my list
+                loadRooms()
+            } catch (e: Exception) {
+                // optional: add error state later
+            }
+        }
+    }
+
 }
