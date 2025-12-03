@@ -93,7 +93,11 @@ fun UserSelectorScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(groupRooms) { room ->
-                    GroupRow(room = room) { onGroupSelected(room) }
+                    GroupRow(
+                        room = room,
+                        onClick = { onGroupSelected(room) },
+                        onLeave = { roomsViewModel.leaveGroup(room.id) }
+                    )
                 }
             }
         }
