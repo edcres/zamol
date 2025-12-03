@@ -80,4 +80,11 @@ class ChatRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun leaveChatRoom(chatRoomId: String, userId: String) {
+        firestore.collection("chatRooms")
+            .document(chatRoomId)
+            .update("participants", FieldValue.arrayRemove(userId))
+            .await()
+    }
+
 }
