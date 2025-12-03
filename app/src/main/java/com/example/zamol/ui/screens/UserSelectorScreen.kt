@@ -175,3 +175,108 @@ private fun UserRow(
         }
     }
 }
+
+@Composable
+private fun CreateGroupDialog(
+    users: List<User>,
+    onDismiss: () -> Unit,
+    onCreate: (groupName: String, selectedUserIds: List<String>) -> Unit
+) {
+    var groupName by remember { mutableStateOf("") }
+    val selectedIds = remember { mutableStateListOf<String>() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Create group") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = { Text("Group name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Select members",
+                    style = MaterialTheme.typography.labelMedium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 240.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(users) { user ->
+                        val isSelected = selectedIds.contains(user.uid)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (isSelected) {
+                                        selectedIds.remove(user.uid)
+                                    } else {
+                                        selectedIds.add(user.uid)
+                                    }
+                                }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = isSelected,
+                                onCheckedChange = { checked ->
+                                    if (checked) {
+                                        if (!selectedIds.contains(user.uid)) {
+                                            selectedIds.add(user.uid)
+                                        }
+                                    } else {
+                                        selectedIds.remove(user.uid)
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = user.displayName.ifBlank { user.email },
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Pick at least 2 people (besides you) to make a group.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val name = groupName.trim()
+                    if (name.isNotEmpty() && selectedIds.size >= 2) {
+                        onCreate(name, selectedIds.toList())
+                    }
+                }
+            ) {
+                Text("Create")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
