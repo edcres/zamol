@@ -99,7 +99,7 @@ fun UserSelectorScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Divider()
+        HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
 
         // 🔹 1-to-1 section
