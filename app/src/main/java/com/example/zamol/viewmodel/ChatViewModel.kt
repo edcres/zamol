@@ -51,6 +51,20 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun leaveCurrentGroup() {
+        val chatRoomId = currentChatRoomId ?: return
+        val userId = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            try {
+                chatRepository.leaveChatRoom(chatRoomId, userId)
+            } catch (e: Exception) {
+                _error.value = e.message
+            }
+        }
+    }
+
+
     fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
     }
