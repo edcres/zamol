@@ -9,6 +9,8 @@ import com.example.zamol.ui.screens.AuthScreen
 import com.example.zamol.ui.screens.ChatScreen
 import com.example.zamol.ui.screens.UserSelectorScreen
 import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 object Routes {
     const val AUTH = "auth"
@@ -55,16 +57,27 @@ fun AppNavHost(
                 }
             )
         }
-
-
+        
         composable(
-            route = "${Routes.CHAT}/{chatRoomId}",
-            arguments = listOf(navArgument("chatRoomId") {
-                type = NavType.StringType
-            })
+            route = "${Routes.CHAT}/{chatRoomId}/{isGroup}/{title}",
+            arguments = listOf(
+                navArgument("chatRoomId") { type = NavType.StringType },
+                navArgument("isGroup") { type = NavType.BoolType },
+                navArgument("title") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val chatRoomId = backStackEntry.arguments?.getString("chatRoomId") ?: return@composable
-            ChatScreen(chatRoomId = chatRoomId)
+            val isGroup = backStackEntry.arguments?.getBoolean("isGroup") ?: false
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+
+            ChatScreen(
+                chatRoomId = chatRoomId,
+                isGroup = isGroup,
+                title = title,
+                onLeaveGroup = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
