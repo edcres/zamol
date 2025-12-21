@@ -1,6 +1,5 @@
 package com.example.zamol.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +22,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatScreen(
     chatRoomId: String,
+    isGroup: Boolean,
+    title: String,
+    onLeaveGroup: () -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
@@ -51,7 +52,7 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            // ✅ Custom non-experimental top bar
+            // Custom top bar – no experimental API
             Surface(
                 color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp
@@ -63,10 +64,26 @@ fun ChatScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Chat",
+                        text = if (title.isNotBlank()) title else "Chat",
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    if (isGroup) {
+                        TextButton(
+                            onClick = {
+                                viewModel.leaveCurrentGroup()
+                                onLeaveGroup()
+                            }
+                        ) {
+                            Text(
+                                text = "Leave",
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -94,7 +111,7 @@ fun ChatScreen(
                 }
             }
 
-            Divider()
+            HorizontalDivider()
 
             // Input row
             Row(
@@ -143,4 +160,3 @@ fun ChatScreen(
         }
     }
 }
-
