@@ -1,5 +1,6 @@
 package com.example.zamol.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
@@ -45,19 +46,25 @@ fun AppNavHost(
                 onUserSelected = { selectedUser ->
                     val me = currentUserId ?: return@UserSelectorScreen
 
-                    // DM-style deterministic room ID
                     val chatRoomId = listOf(me, selectedUser.uid)
                         .sorted()
                         .joinToString("_")
 
-                    navController.navigate("${Routes.CHAT}/$chatRoomId")
+                    val chatTitle = selectedUser.displayName.ifBlank { selectedUser.email }
+                    val encodedTitle = Uri.encode(chatTitle)
+
+                    navController.navigate("${Routes.CHAT}/$chatRoomId/false/$encodedTitle")
                 },
                 onGroupSelected = { room ->
-                    navController.navigate("${Routes.CHAT}/${room.id}")
+                    val chatTitle = room.name ?: "Group"
+                    val encodedTitle = Uri.encode(chatTitle)
+
+                    navController.navigate("${Routes.CHAT}/${room.id}/true/$encodedTitle")
                 }
             )
+
         }
-        
+
         composable(
             route = "${Routes.CHAT}/{chatRoomId}/{isGroup}/{title}",
             arguments = listOf(
