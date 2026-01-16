@@ -52,17 +52,16 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            // Custom top bar – no experimental API
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding(),
+                    .fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
