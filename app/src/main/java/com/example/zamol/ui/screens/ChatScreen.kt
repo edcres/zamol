@@ -54,6 +54,9 @@ fun ChatScreen(
         topBar = {
             // Custom top bar – no experimental API
             Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
                 color = MaterialTheme.colorScheme.primary,
                 shadowElevation = 4.dp
             ) {
