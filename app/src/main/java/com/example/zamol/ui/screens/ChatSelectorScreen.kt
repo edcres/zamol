@@ -20,7 +20,7 @@ import com.example.zamol.viewmodel.UserListViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun UserSelectorScreen(
+fun ChatSelectorScreen(
     onUserSelected: (User) -> Unit,
     onGroupSelected: (ChatRoom) -> Unit
 ) {

@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.zamol.ui.screens.AuthScreen
 import com.example.zamol.ui.screens.ChatScreen
-import com.example.zamol.ui.screens.UserSelectorScreen
+import com.example.zamol.ui.screens.ChatSelectorScreen
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -42,9 +42,9 @@ fun AppNavHost(
         composable(Routes.SELECT_USER) {
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-            UserSelectorScreen(
+            ChatSelectorScreen(
                 onUserSelected = { selectedUser ->
-                    val me = currentUserId ?: return@UserSelectorScreen
+                    val me = currentUserId ?: return@ChatSelectorScreen
 
                     val chatRoomId = listOf(me, selectedUser.uid)
                         .sorted()
