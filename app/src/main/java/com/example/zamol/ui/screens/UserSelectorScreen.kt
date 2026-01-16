@@ -28,7 +28,7 @@ fun UserSelectorScreen(
     val roomsViewModel: ChatRoomsViewModel = hiltViewModel()
 
     val users by userViewModel.users.collectAsStateWithLifecycle()
-    val rooms by roomsViewModel.rooms.collectAsStateWithLifecycle()
+    val groupRooms by roomsViewModel.rooms.collectAsStateWithLifecycle()
 
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -38,9 +38,6 @@ fun UserSelectorScreen(
     } else {
         users.filter { it.uid != currentUserId }
     }
-
-    // Groups: only rooms with 3+ participants (creator + at least 2 others)
-    val groupRooms = rooms.filter { it.participants.size > 2 }
 
     var showCreateGroupDialog by remember { mutableStateOf(false) }
 
